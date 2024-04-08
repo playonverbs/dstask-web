@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Tasks</title>
+    <meta charset="utf-8">
+    <meta lang="en-GB">
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+  </head>
+
+  <body>
+    <main class="mw6 center helvetica">
+      <h1 class="mt4 bb bw2 ttu tracked-tight">dstask-web</h1>
+      <form action="/task/add" method="POST" target="_blank">
+        <input id="desc"
+               name="desc"
+               class="input-reset ba b--black-20 pa2 mb2 db w-100"
+               type="text"
+               placeholder="Search/Add Tasks"
+               autocomplete="off"
+               aria-describedby="name-desc" />
+      </form>
+      {{ range . }}
+      <article class="mt3 mh1">
+        <a class="link dt w-100 bb b--black-10 pb2 mt2 dim blue" href="task/{{ .UUID }}">
+          <div class="dtc v-top pl2">
+            <h1 class="f6 f5-ns fw6 lh-title black mv0">{{.ID}}. {{ .Summary }}</h1>
+            <h2 class="f6 fw4 mt2 mb0 black-60">{{ .UUID }}</h2>
+            <h2 class="f6 fw4 mt2 mb0 black-60">{{ .Notes }}</h2>
+            <dl class="mt2 f6 mb1">
+            {{ range .Tags }}
+              <dd class="ml0">{{.}}</dd>
+            {{ end }}
+            </dl>
+          </div>
+        </a>
+      </article>
+      {{ end }}
+    </main>
+  </body>
+</html>
