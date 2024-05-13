@@ -18,8 +18,11 @@
                placeholder="Search/Add Tasks"
                autocomplete="off"
                aria-describedby="name-desc" />
+        {{ range $key, $value := .GetTags }}
+          <a class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-dark-green" href="#0">{{$key}}</a>
+        {{ end }}
       </form>
-      {{ range . }}
+      {{ range .Tasks }}
       <article class="mt3 mh1">
         <a class="link dt w-100 bb b--black-10 pb2 mt2 dim blue" href="task/{{ .UUID }}">
           <div class="dtc v-top pl2">

@@ -27,7 +27,7 @@ func IndexHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t.Execute(rw, ts.Tasks())
+	t.Execute(rw, ts)
 }
 
 func TaskIndexHandler(rw http.ResponseWriter, r *http.Request) {
