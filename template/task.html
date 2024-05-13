@@ -16,8 +16,11 @@
             <h2 class="f6 fw4 mt2 mb0 black-60">{{ .UUID }}</h2>
             <h2 class="f6 fw4 mt2 mb0 black-60">{{ .Status }}</h2>
             <h2 class="f6 fw4 mt2 mb0 black-60">{{ .Notes }}</h2>
-            <h2 class="f6 fw4 mt2 mb0 black-60">{{ .Created.Format "2006 Jan 02" }}</h2>
-            <h2 class="f6 fw4 mt2 mb0 black-60">{{ .Due.Format "2006 Jan 02" }}</h2>
+            <h2 class="f6 fw4 mt2 mb0 black-60 dib">{{ .Created.Format "2006 Jan 02" }}</h2>
+            {{ if ne .Due.Year 0001 }}
+              <span class="ph1">&mdash;</span>
+              <h2 class="f6 fw4 mt2 mb0 black-60 dib">{{ .Due.Format "2006 Jan 02" }}</h2>
+            {{ end }}
             <dl class="mt2 f6 mb1">
             {{ range .Tags }}
               <dd class="ml0">{{.}}</dd>

@@ -28,6 +28,7 @@ func main() {
 	ctx = state.Context
 
 	r := mux.NewRouter()
+	r.StrictSlash(true)
 	r.HandleFunc("/", IndexHandler).Methods(http.MethodGet)
 	r.HandleFunc("/task/add", TaskAddHandler).Methods(http.MethodPost)
 	r.HandleFunc("/task/{uuid}", TaskIndexHandler).Methods(http.MethodGet)
@@ -39,7 +40,7 @@ func main() {
 		s.Use(APIMiddleware)
 
 		s.HandleFunc("/next", APINextHandler)
-		s.HandleFunc("/task/", APINextHandler)
+		s.HandleFunc("/task", APINextHandler)
 		s.HandleFunc("/task/{id}", APITaskHandler)
 		s.HandleFunc("/add", APIAddHandler)
 	}
