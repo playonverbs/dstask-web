@@ -19,7 +19,7 @@
                autocomplete="off"
                aria-describedby="name-desc" />
         {{ range $key, $value := .GetTags }}
-          <a class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-dark-green" href="#0">{{$key}}</a>
+        <a class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-dark-green" href="/tag/{{$key}}">{{$key}}</a>
         {{ end }}
       </form>
       {{ range .Tasks }}

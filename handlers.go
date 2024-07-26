@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/naggie/dstask"
@@ -21,13 +21,11 @@ func IndexHandler(rw http.ResponseWriter, r *http.Request) {
 	ts.SortByCreated(dstask.Ascending)
 	ts.SortByPriority(dstask.Ascending)
 
-	t, err := template.ParseFiles("template/index.html")
+	err = templs.ExecuteTemplate(rw, "index.html", ts)
 	if err != nil {
 		http.Error(rw, "failed to parse template", http.StatusInternalServerError)
 		return
 	}
-
-	t.Execute(rw, ts)
 }
 
 func TaskIndexHandler(rw http.ResponseWriter, r *http.Request) {
@@ -42,15 +40,36 @@ func TaskIndexHandler(rw http.ResponseWriter, r *http.Request) {
 
 	for _, t := range ts.Tasks() {
 		if t.UUID == uuid {
-			templ, err := template.ParseFiles("template/task.html")
+			err := templs.ExecuteTemplate(rw, "task.html", t)
 			if err != nil {
 				http.Error(rw, "failed to parse template", http.StatusInternalServerError)
 				return
 			}
-
-			templ.Execute(rw, t)
 			return
 		}
+	}
+}
+
+func TaskTagHandler(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	tags := strings.Split(vars["tag"], ",")
+
+	ts, err := dstask.LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	if err != nil {
+		http.Error(rw, "failed to load tasks", http.StatusInternalServerError)
+		return
+	}
+
+	ts.Filter(dstask.Query{
+		Tags: tags,
+	})
+	ts.SortByCreated(dstask.Ascending)
+	ts.SortByPriority(dstask.Ascending)
+
+	err = templs.ExecuteTemplate(rw, "tag.html", ts)
+	if err != nil {
+		http.Error(rw, "failed to parse template", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -143,4 +162,21 @@ func APITaskHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusNotFound)
 }
 
-func APIAddHandler(rw http.ResponseWriter, h *http.Request) {}
+func APIAddHandler(rw http.ResponseWriter, r *http.Request) {}
+
+func APIProjectsHandler(rw http.ResponseWriter, r *http.Request) {
+	ts, err := dstask.LoadTaskSet(conf.Repo, conf.IDsFile, false)
+	if err != nil {
+		http.Error(rw, "failed to load tasks", http.StatusInternalServerError)
+		return
+	}
+
+	b, err := json.Marshal(ts.GetProjects())
+	if err != nil {
+		http.Error(rw, "failed to marshal to json", http.StatusInternalServerError)
+		return
+	}
+
+	rw.Write(b)
+	return
+}
