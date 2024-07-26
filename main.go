@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -18,6 +19,8 @@ var (
 	state   dstask.State
 	ctx     dstask.Query
 	apiFlag = flag.Bool("api", false, "enable/disable api endpoints")
+
+	templs = template.Must(template.ParseGlob("template/*.html"))
 )
 
 func main() {
@@ -27,11 +30,15 @@ func main() {
 	state = dstask.LoadState(conf.StateFile)
 	ctx = state.Context
 
+	log.Println(templs.DefinedTemplates())
+
 	r := mux.NewRouter()
 	r.StrictSlash(true)
+	// r.Handle("/", handlers.LoggingHandler(os.Stdout, http.HandlerFunc(IndexHandler))).Methods(http.MethodGet)
 	r.HandleFunc("/", IndexHandler).Methods(http.MethodGet)
 	r.HandleFunc("/task/add", TaskAddHandler).Methods(http.MethodPost)
 	r.HandleFunc("/task/{uuid}", TaskIndexHandler).Methods(http.MethodGet)
+	r.HandleFunc("/tag/{tag}", TaskTagHandler).Methods(http.MethodGet)
 
 	if *apiFlag {
 		s := r.PathPrefix("/api").
@@ -42,6 +49,7 @@ func main() {
 		s.HandleFunc("/next", APINextHandler)
 		s.HandleFunc("/task", APINextHandler)
 		s.HandleFunc("/task/{id}", APITaskHandler)
+		s.HandleFunc("/projects", APIProjectsHandler)
 		s.HandleFunc("/add", APIAddHandler)
 	}
 
